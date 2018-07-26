@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+<style>
+* {
+	box-sizing: border-box;
+}
+
+#inputSearch{
+	background-image: url('/css/searchicon.png');
+	background-position: 10px 10px;
+	background-repeat: no-repeat;
+	width: 25%;
+	font-size: 16px;
+	padding: 12px 20px 12px 40px;
+	border: 1px solid #ddd;
+	margin-bottom: 12px;
+	margin-left: 1%;
+}
+
+#historyTable{
+	border-collapse: collapse;
+	width: 98%;
+	border: 1px solid #ddd;
+	font-size: 18px;
+	margin-left: 1%;
+}
+
+#historyTable th, #historyTable td{
+	text-align: center;
+	padding: 12px;
+}
+
+#historyTable tr{
+	border-bottom: 1px solid #ddd;
+}
+
+#historyTable tr.header, #historyTable tr:hover{
+	background-color: #f1f1f1;
+}
+</style>
+<body>
+	<nav th:replace="headerPage :: header"></nav>
+
+	<h2 align="center">Update Treatment History</h2>
+	<br />
+	<input type="text" id="inputSearch"
+		onkeyup="searchName()" placeholder="Search for doctor's name.."
+		title="Type in a name"></input>
+
+	<table id="historyTable">
+		<tr class="header">
+			<th style="width: 5%;">No.</th>
+			<th style="width: 20%;">Doctor's ID</th>
+			<th style="width: 25%;">Treatment ID</th>
+			<th style="width: 10%;">Time</th>
+		</tr>
+		<tr th:each="item,iterStat : ${histories}">
+			<td th:text="${iterStat.count}"></td>
+			<td th:text="${item.user_id}"></td>
+			<td th:text="${item.treatment_id}"></td>
+			<td th:text="${item.time}"></td>
+		</tr>
+	</table>
+
+	<script>
+		function searchName() {
+			var table, tr, i;
+			var inputName;
+			var filterName;
+			var tdName;
+			var boolName;
+
+			inputName = document.getElementById("inputSearch");
+
+			filterName = inputName.value.toUpperCase();
+
+			table = document.getElementById("historyTable");
+			tr = table.getElementsByTagName("tr");
+
+			for (i = 0; i < tr.length; i++) {
+				tdName = tr[i].getElementsByTagName("td")[1]; // postion tag td
+
+				if (tdName) {
+					if (tdName.innerHTML.toUpperCase().indexOf(filterName) > -1) {
+						boolName = true;
+					} else {
+						boolName = false;
+					}
+				} else
+					boolName = true;
+
+				if (boolName) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none";
+				}
+
+			}
+		}
+	</script>
+
+</body>
+</html>

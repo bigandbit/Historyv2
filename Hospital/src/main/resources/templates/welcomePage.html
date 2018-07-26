@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+<body>
+	<nav th:replace="headerPage :: header"></nav>
+		<ul class="top-header__links list-unstyled">
+			<a class="navbar-brand" th:href="@{/}"><li
+				class="top-header__link">Home</li></a>
+			<a class="navbar-brand" th:if="${#request.userPrincipal != null}"
+				th:href="@{/userInfo}"><li class="top-header__link">Hello <span
+					th:utext="${#request.userPrincipal.name}"></span>
+			</li></a>
+			<a class="navbar-brand" th:if="${#request.userPrincipal != null}"
+				th:href="@{/logout}"><li class="top-header__link">Logout</li></a>
+			<a class="navbar-brand" th:if="${#request.userPrincipal == null}"
+				th:href="@{/login}"><li class="top-header__link">Login</li></a>
+		</ul>
+</body>
+</html>

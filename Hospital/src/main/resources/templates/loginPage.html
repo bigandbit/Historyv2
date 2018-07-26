@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Login</title>
+</head>
+<body>
+	<!-- Include headerPage.html -->
+	<th:block th:include="/headerPage"></th:block><br/><br/>
+
+	<!-- /login?error=true -->
+	<div th:if="${#request.getParameter('error') == 'true'}"
+		style="color: red; margin: 10px 0px;">
+		Login Failed!!!<br /> Reason : <span
+			th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}"
+			th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
+			Static summary </span>
+
+	</div>
+
+
+	<div class="container">
+		<div class="row">
+			<div
+				class="col-xs-12 col-sm-12 col-md-4 well well-sm col-md-offset-4">
+				<legend>
+					<a href=""><i class="glyphicon glyphicon-globe"></i></a> LOGIN
+				</legend>
+				<form name='f' th:action="@{/j_spring_security_check}" method='POST' class="form" role="form">
+					<input class="form-control" name="username" placeholder="User Name"
+						type="text" required> <br>
+					<input class="form-control"
+						name="password" placeholder="Password" type="password" required>
+					<br>
+					<div class="form-group">
+						<div class="checkbox">
+							<label> <input type="checkbox" name="remember-me"> Ghi nhớ đăng nhập
+							</label>
+						</div>
+					</div>
+					<br>
+					<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+<style>
+* {
+	box-sizing: border-box;
+}
+#success{
+	margin-left:1%;
+	width:98%;
+}
+#inputSearch, #inputDiseases, #inputMedicine, #inputSearchPatient {
+	background-image: url('/css/searchicon.png');
+	background-position: 10px 10px;
+	background-repeat: no-repeat;
+	width: 25%;
+	font-size: 16px;
+	padding: 12px 20px 12px 40px;
+	border: 1px solid #ddd;
+	margin-bottom: 12px;
+	margin-left: 1%;
+}
+
+#myTable, #patientTable {
+	border-collapse: collapse;
+	width: 98%;
+	border: 1px solid #ddd;
+	font-size: 18px;
+	margin-left: 1%;
+}
+
+#myTable th, #myTable td, #patientTable th, #patientTable td {
+	text-align: center;
+	padding: 12px;
+}
+
+#myTable tr, #patientTable tr {
+	border-bottom: 1px solid #ddd;
+}
+
+#myTable tr.header, #myTable tr:hover, #patientTable tr.header,
+	#patientTable tr:hover {
+	background-color: #f1f1f1;
+}
+</style>
+<body>
+	<nav th:replace="headerPage :: header"></nav>
+	<h3 style="margin-left:1%">
+		Welcome : <span th:utext="${#request.userPrincipal.name}"></span>
+	</h3>
+	<div th:if="${userInfo != null}" th:utext="${userInfo}"></div>
+	<div id="success" th:if="${success}"
+		class="row alert alert-success alert-dismissible" >
+		<button type="button" class="close" data-dismiss="alert"
+			aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<span th:text="${success}"></span>
+	</div>
+	<h2 align="center">Patient List</h2>
+
+	<input type="text" id="inputSearchPatient"
+		onkeyup="searchFilterPatient()" placeholder="Search for names.."
+		title="Type in a name"></input>
+
+	<table id="patientTable">
+		<tr class="header">
+			<th style="width: 5%;">No.</th>
+			<th style="width: 20%;">Full name</th>
+			<th style="width: 25%;">Address</th>
+			<th style="width: 15%;">Date of birthday</th>
+			<th style="width: 5%;">Sex</th>
+			<th style="width: 10%;">Phone</th>
+			<th style="width: 10%;">Pick up</th>
+		</tr>
+		<tr th:each="item,iterStat : ${patients}">
+			<td th:text="${iterStat.count}"></td>
+			<td th:text="${item.name}"></td>
+			<td th:text="${item.address}"></td>
+			<td th:text="${item.dob}"></td>
+			<td th:text="${item.sex}"></td>
+			<td th:text="${item.phone}"></td>
+			<td><a
+				th:href="@{/doctor/create_treatment/{id_patient}(id_patient=${item.id})}"
+				class="btn pull-left" style="padding: 12px 12px 12px 12px;"> <span
+					class="glyphicon glyphicon-plus"></span> Add new treatment
+			</a></td>
+		</tr>
+	</table>
+
+	<h2 align="center">Treatment List</h2>
+
+	<input type="text" id="inputSearch" onkeyup="searchFilter()"
+		placeholder="Search for names.." title="Type in a name"></input>
+	<input type="text" id="inputDiseases" onkeyup="searchFilter()"
+		placeholder="Search for diseases.." title="Type in a name"></input>
+	<input type="text" id="inputMedicine" onkeyup="searchFilter()"
+		placeholder="Search for medicine.." title="Type in a name"></input>
+
+	<table id="myTable">
+		<tr class="header">
+			<th style="width: 5%;">No.</th>
+			<th style="width: 11%;">Treatment ID</th>
+			<th style="width: 20%;">Full name</th>
+			<th style="width: 30%;">History of Diseases</th>
+			<th style="width: 25%;">Allergic Medicine</th>
+			<th style="width: 10%;">Download</th>
+			<th style="width: 10%;">Pick Up</th>
+		</tr>
+		<tr th:each="item,iterStat : ${list_result}">
+			<td th:text="${iterStat.count}"></td>
+			<td th:text="${item.id}"></td>
+			<td th:text="${item.name}"></td>
+			<td th:text="${item.hod}"></td>
+			<td th:text="${item.allergic_medicine}"></td>
+			<td><a
+				th:href="@{/doctor/download/{id_treatment}(id_treatment=${item.id})}"
+				class="btn pull-left" style="padding: 12px 12px 12px 12px;"> <span
+					class="glyphicon glyphicon-download"></span> Download
+			</a></td>
+			<td><a
+				th:href="@{/doctor/edit_treatment/{id_treatment}(id_treatment=${item.id})}"
+				class="btn pull-left" style="padding: 12px 12px 12px 12px;"> <span
+					class="glyphicon glyphicon-edit"></span> Edit treatment
+			</a></td>
+		</tr>
+	</table>
+
+	<script>
+		function searchFilter() {
+			var input, filter, table, tr, td, i;
+			var inputName, inputDiseases, inputMedicine;
+			var filterName, filterDiseases, filterMedicine;
+			var tdName, tdDiseases, tdMedicine;
+			var boolName, boolDiseases, boolMedicine;
+
+			inputName = document.getElementById("inputSearch");
+			inputDiseases = document.getElementById("inputDiseases");
+			inputMedicine = document.getElementById("inputMedicine");
+
+			filterName = inputName.value.toUpperCase();
+			filterDiseases = inputDiseases.value.toUpperCase();
+			filterMedicine = inputMedicine.value.toUpperCase();
+
+			table = document.getElementById("myTable");
+			tr = table.getElementsByTagName("tr");
+
+			for (i = 0; i < tr.length; i++) {
+				tdName = tr[i].getElementsByTagName("td")[2]; // postion tag td
+				tdDiseases = tr[i].getElementsByTagName("td")[3];
+				tdMedicine = tr[i].getElementsByTagName("td")[4];
+
+				if (tdName) {
+					if (tdName.innerHTML.toUpperCase().indexOf(filterName) > -1) {
+						boolName = true;
+					} else {
+						boolName = false;
+					}
+				} else
+					boolName = true;
+
+				if (tdDiseases) {
+					if (tdDiseases.innerHTML.toUpperCase().indexOf(
+							filterDiseases) > -1) {
+						boolDiseases = true;
+					} else {
+						boolDiseases = false;
+					}
+				} else
+					boolDiseases = true;
+
+				if (tdMedicine) {
+					if (tdMedicine.innerHTML.toUpperCase().indexOf(
+							filterMedicine) > -1) {
+						boolMedicine = true;
+					} else {
+						boolMedicine = false;
+					}
+				} else
+					boolMedicine = true;
+
+				if (boolName && boolDiseases && boolMedicine) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none";
+				}
+
+			}
+		}
+		function searchFilterPatient() {
+			var input, filter, table, tr, td, i;
+			var inputName, inputDiseases, inputMedicine;
+			var filterName, filterDiseases, filterMedicine;
+			var tdName, tdDiseases, tdMedicine;
+			var boolName, boolDiseases, boolMedicine;
+
+			inputName = document.getElementById("inputSearchPatient");
+
+			filterName = inputName.value.toUpperCase();
+
+			table = document.getElementById("patientTable");
+			tr = table.getElementsByTagName("tr");
+
+			for (i = 0; i < tr.length; i++) {
+				tdName = tr[i].getElementsByTagName("td")[1]; // postion tag td
+
+				if (tdName) {
+					if (tdName.innerHTML.toUpperCase().indexOf(filterName) > -1) {
+						boolName = true;
+					} else {
+						boolName = false;
+					}
+				} else
+					boolName = true;
+
+				if (boolName) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none";
+				}
+
+			}
+		}
+	</script>
+
+</body>
+</html>
